@@ -1,4 +1,4 @@
-import fcntl
+# import fcntl
 import os
 import signal
 import subprocess
@@ -24,8 +24,13 @@ class Result:
 
 def set_nonblocking(reader):
     fd = reader.fileno()
-    fl = fcntl.fcntl(fd, fcntl.F_GETFL)
-    fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+    if os.name == 'posix':
+        import fcntl
+        fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+        fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+    elif os.name == 'nt':
+        import msvcrt
+        msvcrt.set_nonblocking(fd)
 
 
 def run(
